@@ -1,7 +1,54 @@
-stage('Compile Code') {
-    steps {
-        dir('project') {
-            bat 'mvn compile'
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven_3.8.6' // Replace with your configured Maven version name in Jenkins
+        git 'Default'       // Optional: if you’ve configured a Git tool
+    }
+
+    environment {
+        MAVEN_HOME = tool 'Maven_3.8.6'
+        PATH = "${MAVEN_HOME}/bin:${env.PATH}"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'master', url: 'https://github.com/KaniLeenas/CI-CD_pipeline.git'
+            }
+        }
+
+        stage('Compile Code') {
+            steps {
+                dir('project') {
+                    bat 'mvn compile'
+                }
+            }
+        }
+
+        stage('Test Code') {
+            steps {
+                dir('project') {
+                    bat 'mvn test'
+                }
+            }
+        }
+
+        stage('Package Code') {
+            steps {
+                dir('project') {
+                    bat 'mvn package'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build completed successfully!'
+        }
+        failure {
+            echo '❌ Build failed. Check logs for details.'
         }
     }
 }
