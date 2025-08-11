@@ -1,0 +1,7 @@
+stage('Compile Code') {
+    steps {
+        dir('project') {
+            bat 'mvn compile'
+        }
+    }
+}
